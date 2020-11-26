@@ -11,10 +11,8 @@ public class ProceedsCounter implements Runnable {
 
     @Override
     public void run() {
-        Long sum = 0L;
         for (Long proceed : storeProceeds) {
-            sum += proceed;
+            totalProceeds.add(proceed);
         }
-        totalProceeds.add(sum);
     }
 }

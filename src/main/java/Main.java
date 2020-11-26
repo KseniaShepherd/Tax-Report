@@ -7,7 +7,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.LongAdder;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
         List<Long[]> storesProcceds = new ArrayList<>();
         storesProcceds.add(new Long[]{10L, 10L, 10L});
         storesProcceds.add(new Long[]{20L, 20L, 20L});
@@ -16,19 +16,18 @@ public class Main {
         LongAdder proceeds = new LongAdder();
 
         ExecutorService service = Executors.newFixedThreadPool(3);
+        List<Future<?>> futures = new ArrayList<>();
+
         for (Long[] storeProcceds : storesProcceds) {
-
             Future<?> future = service.submit(new ProceedsCounter(proceeds, storeProcceds));
+            futures.add(future);
+        }
 
-            try {
-                future.get();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
+        for (Future<?> future : futures) {
+            future.get();
         }
 
         System.out.println(proceeds.sum());
+        service.shutdown();
     }
 }
